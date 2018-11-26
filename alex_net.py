@@ -5,7 +5,7 @@ from keras.layers.convolutional import Conv2D, MaxPooling2D, ZeroPadding2D
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
-¬
+
 def alexnet_model(img_shape=(48, 48, 1), n_classes=7, l2_reg=0,
                   weights=None):
 
