@@ -60,7 +60,9 @@ while True:
     # Capture frame-by-frame
     ret, frame = video_capture.read()
 
-    result = format_image(frame)
+    # result = format_image(frame)
+
+    result = None
 
     if result is not None:
         for index, emotion in enumerate(EMOTIONS):
