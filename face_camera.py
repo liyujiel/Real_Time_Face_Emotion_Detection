@@ -54,11 +54,10 @@ while True:
     frame_height = frame.shape[1]
 
     # Predict result with network
-    found = format_image(frame)
+    found, faces = format_image(frame)
 
     if found is not None:
         image = found.reshape([-1, FACE_SIZE, FACE_SIZE, 1])
-        # print(image)
         result = fer_model.predict(image)
     else:
         result = None
@@ -74,6 +73,13 @@ while True:
                           (255, 0, 0), \
                           -1)
 
+            for face in faces:
+                cv2.rectangle(frame, \
+                              (face[0], face[1]), \
+                              (face[0] + face[2], face[1] + face[3]), \
+                              (255, 0, 0), \
+                              2)
+
         # print(result)
 
         for x in range(emoji_size[0]):
@@ -83,7 +89,7 @@ while True:
     else:
         for x in range(emoji_size[0]):
             for y in range(emoji_size[1]):
-                frame[x, y] = emoji_img[7][x, y]
+                frame[x, y] = emoji_img[-1][x, y]
 
                 # print(frame.shape)
         # print(emoji_img.shape)

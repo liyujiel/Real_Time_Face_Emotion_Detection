@@ -17,7 +17,7 @@ def format_image(image):
     )
     # None is we don't found an image
     if not len(faces) > 0:
-        return None
+        return None, None
 
     image = _parsing_max_area_face(faces, image)
 
@@ -26,18 +26,17 @@ def format_image(image):
 
     cv2.imshow("Lol", image)
     # cv2.waitKey(0)
-    return image
+    return image, faces
 
 
 def _parsing_max_area_face(faces, image):
-
     max_area_face = faces[0]
     for face in faces:
         if face[2] * face[3] > max_area_face[2] * max_area_face[3]:
             max_area_face = face
     # Chop image to face
     face = max_area_face
-    print(face)
+
     image = image[face[1]:(face[1] + face[2]), face[0]:(face[0] + face[3])]
 
     return image
@@ -130,7 +129,7 @@ def _parsing_max_area_yolo(box, frame):
     top = box[1]
     width = box[2]
     height = box[3]
-    print(left, top, width, height)
+    # print(left, top, width, height)
     image = frame[box[1]:(box[1] + box[3]), box[0]:(box[0] + box[2])]
 
     return image
