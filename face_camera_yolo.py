@@ -16,7 +16,7 @@ log.basicConfig(filename='webcam.log', level=log.INFO)
 # using them.
 net = cv2.dnn.readNetFromDarknet(MODEL_CFG, MODEL_WEIGHT_FILE)
 net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
-net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
+net.setPreferableTarget(cv2.dnn.DNN_TARGET_OPENCL_FP16)
 
 
 # load emotion model
@@ -38,8 +38,8 @@ while True:
     ret, frame = video_capture.read()
 
     # Create a 4D blob from a frame.
-    blob = cv2.dnn.blobFromImage(frame, 1 / 255, (IMG_WIDTH, IMG_HEIGHT),
-                                 [0, 0, 0], 1, crop=False)
+    blob = cv2.UMat(cv2.dnn.blobFromImage(frame, 1 / 255, (IMG_WIDTH, IMG_HEIGHT),
+                                 [0, 0, 0], 1, crop=False))
 
     # Predict result with network
     # Sets the input to the network

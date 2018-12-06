@@ -16,7 +16,7 @@ def format_image(image):
         minNeighbors=5
     )
     # None is we don't found an image
-    if faces is not None:
+    if not len(faces) > 0:
         return None
 
     image = _parsing_max_area_face(faces, image)
@@ -24,12 +24,13 @@ def format_image(image):
     # Resize image to network size
     image = _resize_face_img(image)
 
-    # cv2.imshow("Lol", image)
+    cv2.imshow("Lol", image)
     # cv2.waitKey(0)
     return image
 
 
 def _parsing_max_area_face(faces, image):
+
     max_area_face = faces[0]
     for face in faces:
         if face[2] * face[3] > max_area_face[2] * max_area_face[3]:
@@ -52,7 +53,7 @@ def _resize_face_img(image):
 
     cv2.imshow("Lol", image)
     # cv2.waitKey(0)
-    
+
     return image
 
 
@@ -86,6 +87,9 @@ def post_process(frame, outs, conf_threshold, nms_threshold):
     indices = cv2.dnn.NMSBoxes(boxes, confidences, conf_threshold,
                                nms_threshold)
 
+    if not len(indices) > 0:
+        return None, None
+
     # for i in indices:
     #     i = i[0]
     #     box = boxes[i]
@@ -105,13 +109,31 @@ def post_process(frame, outs, conf_threshold, nms_threshold):
     draw_predict(frame, confidences[indices[0][0]], left, top, left + width,
                      top + height)
 
-    image = _parsing_max_area_face(boxes, frame)
+    if len(frame.shape) > 2 and frame.shape[2] == 3:
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    else:
+        frame = cv2.imdecode(frame, cv2.CV_LOAD_IMAGE_GRAYSCALE)
 
+    image = _parsing_max_area_yolo(box, frame)
+
+    try:
+        cv2.imshow("yolo_camera", image)
+    except Exception:
+        print("face not in frame")
     # Resize image to network size
     resized_face = _resize_face_img(image)
 
     return final_boxes, resized_face
 
+def _parsing_max_area_yolo(box, frame):
+    left = box[0]
+    top = box[1]
+    width = box[2]
+    height = box[3]
+    print(left, top, width, height)
+    image = frame[box[1]:(box[1] + box[3]), box[0]:(box[0] + box[2])]
+
+    return image
 
 def draw_predict(frame, conf, left, top, right, bottom):
     # Draw a bounding box.
