@@ -92,7 +92,7 @@ while True:
 
         for x in range(emoji_size[0]):
             for y in range(emoji_size[1]):
-                frame[x + face[0] + half_width, y] = emoji_img[np.argmax(result)][x, y]
+                frame[x + face[0] + half_width, y + face[1]] = emoji_img[np.argmax(result)][x, y]
 
     else:
         for x in range(emoji_size[0]):
