@@ -1,7 +1,6 @@
 import cv2
 import sys
 import logging as log
-from PIL import Image
 from time import sleep
 import numpy as np
 import keras
@@ -48,10 +47,10 @@ while True:
 
     # Runs the forward pass to get output of the output layers
     outs = net.forward(get_outputs_names(net))
-    found = post_process(frame, outs, CONF_THRESHOLD, NMS_THRESHOLD)
+    found, resized_face = post_process(frame, outs, CONF_THRESHOLD, NMS_THRESHOLD)
 
-    if found is not None:
-        image = found.reshape([-1, FACE_SIZE, FACE_SIZE, 1])
+    if resized_face is not None:
+        image = resized_face.reshape([-1, FACE_SIZE, FACE_SIZE, 1])
         result = fer_model.predict(image)
     else:
         result = None

@@ -16,6 +16,6 @@ EMOTIONS = ['angry', 'disgusted', 'fear',
 CASC_PATH = "./haarcascade/haarcascade_frontalface_default.xml"
 DATA_DIR = "./data"
 MODEL_CFG = "./cfg/yolov3-face.cfg"
-MODEL_WEIGHT_FILE = "./models/YOLO_Face.h5"
+MODEL_WEIGHT_FILE = "./models/yolov3-wider_16000.weights"
 FER_MODEL_FILE = "./models/alexnet_epoch10_batch256.h5"
 GENDER_MODEL_FILE = "./models/gender_models/simple_CNN.81-0.96.hdf5"

@@ -1,5 +1,4 @@
 import cv2
-from PIL import Image, ImageDraw
 import numpy as np
 from constants import *
 
@@ -19,6 +18,18 @@ def format_image(image):
     # None is we don't found an image
     if not len(faces) > 0:
         return None
+
+    image = _parsing_max_area_face(faces, image)
+
+    # Resize image to network size
+    image = _resize_face_img(image)
+
+    # cv2.imshow("Lol", image)
+    # cv2.waitKey(0)
+    return image
+
+
+def _parsing_max_area_face(faces, image):
     max_area_face = faces[0]
     for face in faces:
         if face[2] * face[3] > max_area_face[2] * max_area_face[3]:
@@ -26,15 +37,18 @@ def format_image(image):
     # Chop image to face
     face = max_area_face
     image = image[face[1]:(face[1] + face[2]), face[0]:(face[0] + face[3])]
-    # Resize image to network size
+
+    return image
+
+
+def _resize_face_img(image):
     try:
         image = cv2.resize(image, (FACE_SIZE, FACE_SIZE),
                            interpolation=cv2.INTER_CUBIC) / 255.
     except Exception:
         print("[+] Problem during resize")
         return None
-    # cv2.imshow("Lol", image)
-    # cv2.waitKey(0)
+
     return image
 
 
@@ -79,7 +93,12 @@ def post_process(frame, outs, conf_threshold, nms_threshold):
         draw_predict(frame, confidences[i], left, top, left + width,
                      top + height)
 
-    return final_boxes
+    image = _parsing_max_area_face(boxes, frame)
+
+    # Resize image to network size
+    resized_face = _resize_face_img(image)
+
+    return final_boxes, resized_face
 
 
 def draw_predict(frame, conf, left, top, right, bottom):
