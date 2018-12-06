@@ -25,6 +25,7 @@ def format_image(image):
             max_area_face = face
     # Chop image to face
     face = max_area_face
+    print(face)
     image = image[face[1]:(face[1] + face[2]), face[0]:(face[0] + face[3])]
     # Resize image to network size
     try:
@@ -33,7 +34,7 @@ def format_image(image):
     except Exception:
         print("[+] Problem during resize")
         return None
-    # cv2.imshow("Lol", image)
+    cv2.imshow("Lol", image)
     # cv2.waitKey(0)
     return image
 
