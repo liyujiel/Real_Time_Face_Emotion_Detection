@@ -36,7 +36,7 @@ feelings_faces = []
 emotion_path = './emoji/'
 emotion_face = ['angry.jpg', 'disgust.jpg', 'fear.jpg', 'happy.jpg', 'sad.jpg', 'surprise.jpg', 'neutral.jpg', 'none.jpg']
 
-emoji_size = (120, 120)
+emoji_size = (50, 50)
 emoji_img = []
 for i in range(len(emotion_face)):
     emoji_img.append(cv2.imread(emotion_path + emotion_face[i]))
@@ -67,6 +67,7 @@ while True:
         for index, emotion in enumerate(EMOTIONS):
             cv2.putText(frame, emotion, (10, index * 20 + 20),
                         cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 1)
+
             cv2.rectangle(frame, \
                           (130, index * 20 + 10), \
                           (130 + int(result[0][index] * 100), (index + 1) * 20 + 4), \
@@ -81,10 +82,17 @@ while True:
                               2)
 
         # print(result)
+        face = find_max_area_face(faces)
+
+        print(face)
+        half_width = int(face[2] / 2)
+        half_height = int(face[3] / 2)
+
+        print(half_width, half_height)
 
         for x in range(emoji_size[0]):
             for y in range(emoji_size[1]):
-                frame[x, y] = emoji_img[np.argmax(result)][x, y]
+                frame[x + face[0] + half_width, y] = emoji_img[np.argmax(result)][x, y]
 
     else:
         for x in range(emoji_size[0]):

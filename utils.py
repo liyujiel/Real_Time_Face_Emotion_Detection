@@ -29,13 +29,18 @@ def format_image(image):
     return image, faces
 
 
-def _parsing_max_area_face(faces, image):
+def find_max_area_face(faces):
     max_area_face = faces[0]
     for face in faces:
         if face[2] * face[3] > max_area_face[2] * max_area_face[3]:
             max_area_face = face
+
+    return max_area_face
+
+
+def _parsing_max_area_face(faces, image):
     # Chop image to face
-    face = max_area_face
+    face = find_max_area_face(faces)
 
     image = image[face[1]:(face[1] + face[2]), face[0]:(face[0] + face[3])]
 
