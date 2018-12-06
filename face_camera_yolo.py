@@ -13,8 +13,11 @@ face_cascade = cv2.CascadeClassifier(CASC_PATH)
 log.basicConfig(filename='webcam.log', level=log.INFO)
 
 # load yolo pre-trained model
-# yolo_model = keras.models.load_model(FACE_MODEL_FILE)
-# yolo_model.load_weights(FACE_MODEL_FILE)
+# Give the configuration and weight files for the model and load the network
+# using them.
+net = cv2.dnn.readNetFromDarknet(MODEL_CFG, MODEL_WEIGHT_FILE)
+net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
+net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
 
 # load emotion model
@@ -24,7 +27,6 @@ fer_model.load_weights(FER_MODEL_FILE)
 # load gender model
 # gender_model = keras.models.load_model(GENDER_MODEL_FILE)
 # gender_model.load_weights(GENDER_MODEL_FILE)
-
 
 video_capture = cv2.VideoCapture(0)
 
@@ -36,8 +38,18 @@ while True:
     # Capture frame-by-frame
     ret, frame = video_capture.read()
 
+    # Create a 4D blob from a frame.
+    blob = cv2.dnn.blobFromImage(frame, 1 / 255, (IMG_WIDTH, IMG_HEIGHT),
+                                 [0, 0, 0], 1, crop=False)
+
     # Predict result with network
-    found = format_image(frame)
+    # Sets the input to the network
+    net.setInput(blob)
+
+    # Runs the forward pass to get output of the output layers
+    outs = net.forward(get_outputs_names(net))
+    found = post_process(frame, outs, CONF_THRESHOLD, NMS_THRESHOLD)
+
     if found is not None:
         image = found.reshape([-1, FACE_SIZE, FACE_SIZE, 1])
         result = fer_model.predict(image)
