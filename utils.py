@@ -16,7 +16,7 @@ def format_image(image):
         minNeighbors=5
     )
     # None is we don't found an image
-    if not len(faces) > 0:
+    if faces is not None:
         return None
 
     image = _parsing_max_area_face(faces, image)
@@ -82,15 +82,23 @@ def post_process(frame, outs, conf_threshold, nms_threshold):
     indices = cv2.dnn.NMSBoxes(boxes, confidences, conf_threshold,
                                nms_threshold)
 
-    for i in indices:
-        i = i[0]
-        box = boxes[i]
-        left = box[0]
-        top = box[1]
-        width = box[2]
-        height = box[3]
-        final_boxes.append(box)
-        draw_predict(frame, confidences[i], left, top, left + width,
+    # for i in indices:
+    #     i = i[0]
+    #     box = boxes[i]
+    #     left = box[0]
+    #     top = box[1]
+    #     width = box[2]
+    #     height = box[3]
+    #     final_boxes.append(box)
+    #     draw_predict(frame, confidences[i], left, top, left + width,
+    #                  top + height)
+
+    box = boxes[indices[0][0]]
+    left = box[0]
+    top = box[1]
+    width = box[2]
+    height = box[3]
+    draw_predict(frame, confidences[indices[0][0]], left, top, left + width,
                      top + height)
 
     image = _parsing_max_area_face(boxes, frame)
