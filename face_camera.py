@@ -12,6 +12,11 @@ from utils import *
 face_cascade = cv2.CascadeClassifier(CASC_PATH)
 log.basicConfig(filename='webcam.log', level=log.INFO)
 
+# load yolo pre-trained model
+# yolo_model = keras.models.load_model(FACE_MODEL_FILE)
+# yolo_model.load_weights(FACE_MODEL_FILE)
+
+
 # load emotion model
 
 fer_model = keras.models.load_model(FER_MODEL_FILE)
@@ -21,7 +26,6 @@ fer_model.load_weights(FER_MODEL_FILE)
 # gender_model = keras.models.load_model(GENDER_MODEL_FILE)
 # gender_model.load_weights(GENDER_MODEL_FILE)
 
-# TODO: load mix face model
 
 video_capture = cv2.VideoCapture(0)
 
