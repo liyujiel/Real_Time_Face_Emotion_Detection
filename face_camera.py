@@ -48,11 +48,6 @@ while True:
     # Capture frame-by-frame
     ret, frame = video_capture.read()
 
-    # print(frame.shape)
-    #get the size of frame
-    frame_width = frame.shape[0]
-    frame_height = frame.shape[1]
-
     # Predict result with network
     found, faces = format_image(frame)
 
