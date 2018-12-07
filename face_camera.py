@@ -29,10 +29,6 @@ fer_model.load_weights(FER_MODEL_FILE)
 
 video_capture = cv2.VideoCapture(0)
 
-feelings_faces = []
-# for index, emotion in enumerate(EMOTIONS):
-#     feelings_faces.append(cv2.imread('./emoji/' + emotion + '.png' ))
-
 emotion_path = './emoji/'
 emotion_face = ['angry.jpg', 'disgust.jpg', 'fear.jpg', 'happy.jpg', 'sad.jpg', 'surprise.jpg', 'neutral.jpg']
 
@@ -81,11 +77,8 @@ while True:
         # print(result)
         face = find_max_area_face(faces)
 
-        print(face)
         half_width = int(face[2] / 2)
         half_height = int(face[3] / 2)
-
-        print(half_width, half_height)
 
         # frame[height, width]
         for x in range(emoji_size[0]):

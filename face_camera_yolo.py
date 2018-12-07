@@ -29,9 +29,16 @@ fer_model.load_weights(FER_MODEL_FILE)
 
 video_capture = cv2.VideoCapture(0)
 
-feelings_faces = []
-for index, emotion in enumerate(EMOTIONS):
-    feelings_faces.append(cv2.imread('./emojis/' + emotion + '.png' ))
+emotion_path = './emoji/'
+emotion_face = ['angry.jpg', 'disgust.jpg', 'fear.jpg', 'happy.jpg', 'sad.jpg', 'surprise.jpg', 'neutral.jpg']
+
+emoji_size = (50, 50)
+emoji_img = []
+
+for i in range(len(emotion_face)):
+    emoji_img.append(cv2.imread(emotion_path + emotion_face[i]))
+    emoji_img[i] = cv2.resize(emoji_img[i], emoji_size)
+
 
 while True:
     # Capture frame-by-frame
@@ -47,7 +54,7 @@ while True:
 
     # Runs the forward pass to get output of the output layers
     outs = net.forward(get_outputs_names(net))
-    found, resized_face = post_process(frame, outs, CONF_THRESHOLD, NMS_THRESHOLD)
+    face, resized_face = post_process(frame, outs, CONF_THRESHOLD, NMS_THRESHOLD)
 
     if resized_face is not None:
         image = resized_face.reshape([-1, FACE_SIZE, FACE_SIZE, 1])
@@ -63,7 +70,17 @@ while True:
             cv2.rectangle(frame, (130, index * 20 + 10), (130 +
                                                           int(result[0][index] * 100), (index + 1) * 20 + 4), (255, 0, 0), -1)
 
-        face_image = feelings_faces[np.argmax(result[0])]
+        # print(found)
+
+        half_width = int(face[2] / 2)
+        half_height = int(face[3] / 2)
+
+        # frame[height, width]
+        for x in range(emoji_size[0]):
+            for y in range(emoji_size[1]):
+                frame[y + face[1] - emoji_size[0], x + face[0] + half_width - int(emoji_size[0] / 2)] = \
+                emoji_img[np.argmax(result)][y, x]
+
 
 
     # Display the resulting frame
