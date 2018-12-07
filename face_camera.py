@@ -34,13 +34,15 @@ feelings_faces = []
 #     feelings_faces.append(cv2.imread('./emoji/' + emotion + '.png' ))
 
 emotion_path = './emoji/'
-emotion_face = ['angry.jpg', 'disgust.jpg', 'fear.jpg', 'happy.jpg', 'sad.jpg', 'surprise.jpg', 'neutral.jpg', 'none.jpg']
+emotion_face = ['angry.jpg', 'disgust.jpg', 'fear.jpg', 'happy.jpg', 'sad.jpg', 'surprise.jpg', 'neutral.jpg']
 
 emoji_size = (50, 50)
 emoji_img = []
 for i in range(len(emotion_face)):
     emoji_img.append(cv2.imread(emotion_path + emotion_face[i]))
     emoji_img[i] = cv2.resize(emoji_img[i], emoji_size)
+
+# emoji_img[-1] = cv2.resize(emoji_img[-1], (200, 200))
 
 # print(emoji_img.shape)
 
@@ -60,14 +62,14 @@ while True:
     # Write results in frame
     if result is not None:
         for index, emotion in enumerate(EMOTIONS):
-            cv2.putText(frame, emotion, (10, index * 20 + 20),
-                        cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 1)
-
-            cv2.rectangle(frame, \
-                          (130, index * 20 + 10), \
-                          (130 + int(result[0][index] * 100), (index + 1) * 20 + 4), \
-                          (255, 0, 0), \
-                          -1)
+            # cv2.putText(frame, emotion, (10, index * 20 + 20),
+            #             cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 1)
+            #
+            # cv2.rectangle(frame, \
+            #               (130, index * 20 + 10), \
+            #               (130 + int(result[0][index] * 100), (index + 1) * 20 + 4), \
+            #               (255, 0, 0), \
+            #               -1)
 
             for face in faces:
                 cv2.rectangle(frame, \
@@ -85,14 +87,15 @@ while True:
 
         print(half_width, half_height)
 
+        # frame[height, width]
         for x in range(emoji_size[0]):
             for y in range(emoji_size[1]):
-                frame[x + face[0] + half_width, y + face[1]] = emoji_img[np.argmax(result)][x, y]
+                frame[y + face[1] - emoji_size[0], x + face[0] + half_width - int(emoji_size[0] / 2)] = emoji_img[np.argmax(result)][y, x]
 
-    else:
-        for x in range(emoji_size[0]):
-            for y in range(emoji_size[1]):
-                frame[x, y] = emoji_img[-1][x, y]
+    # else:
+    #     for x in range(200):
+    #         for y in range(200):
+    #             frame[x, y] = emoji_img[-1][x, y]
 
                 # print(frame.shape)
         # print(emoji_img.shape)
@@ -100,7 +103,10 @@ while True:
 
 
     # Display the resulting frame
-    cv2.imshow('Video', frame)
+    try:
+        cv2.imshow('Video', frame)
+    except Exception:
+        print("Out of range")
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
