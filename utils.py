@@ -5,7 +5,7 @@ from constants import *
 face_cascade = cv2.CascadeClassifier(CASC_PATH)
 
 
-def format_image(image):
+def format_image(image, max_face = 1):
     if len(image.shape) > 2 and image.shape[2] == 3:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     else:
@@ -19,14 +19,42 @@ def format_image(image):
     if not len(faces) > 0:
         return None, None
 
+    image_faces = []
+    count = 0
+    for face in faces:
+        image_face = image[face[1] : face[1] + face[2], face[0] : face[0] + face[3]]
+        image_face = _resize_face_img(image_face)
+        image_faces.append(image_face)
+        count += 1
+        if count == max_face:
+            break
+
+    try:
+        cv2.imshow("face1", image_faces[0])
+    except Exception:
+        print("no face 1")
+
+    try:
+        cv2.imshow("face2", image_faces[1])
+    except Exception:
+        print("no face 2")
+
+    return image_faces, faces
+
+    # ============= Old ==================
+
+    cv2.imshow("gray", image)
+
     image = _parsing_max_area_face(faces, image)
 
     # Resize image to network size
     image = _resize_face_img(image)
 
-    cv2.imshow("Lol", image)
+    # cv2.imshow("Lol", image)
     # cv2.waitKey(0)
     return image, faces
+
+    # ====================================
 
 
 def find_max_area_face(faces):
@@ -55,7 +83,7 @@ def _resize_face_img(image):
         print("[+] Problem during resize")
         return None
 
-    cv2.imshow("Lol", image)
+    # cv2.imshow("Lol", image)
     # cv2.waitKey(0)
 
     return image

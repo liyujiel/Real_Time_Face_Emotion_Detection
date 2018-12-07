@@ -47,54 +47,88 @@ while True:
     ret, frame = video_capture.read()
 
     # Predict result with network
-    found, faces = format_image(frame)
+    image_faces, faces = format_image(frame)
 
-    if found is not None:
-        image = found.reshape([-1, FACE_SIZE, FACE_SIZE, 1])
-        result = fer_model.predict(image)
-    else:
-        result = None
+    if image_faces is None:
+        continue
+    try:
+        cv2.imshow('face1', image_faces[0])
+    except Exception:
+        print("no face 1")
 
-    # Write results in frame
-    if result is not None:
-        for index, emotion in enumerate(EMOTIONS):
-            # cv2.putText(frame, emotion, (10, index * 20 + 20),
-            #             cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 1)
-            #
-            # cv2.rectangle(frame, \
-            #               (130, index * 20 + 10), \
-            #               (130 + int(result[0][index] * 100), (index + 1) * 20 + 4), \
-            #               (255, 0, 0), \
-            #               -1)
+    try:
+        cv2.imshow('face2', image_faces[1])
+    except Exception:
+        print("no face 2")
 
-            for face in faces:
-                cv2.rectangle(frame, \
-                              (face[0], face[1]), \
-                              (face[0] + face[2], face[1] + face[3]), \
-                              (255, 0, 0), \
-                              2)
+    results = []
+    for i, image_face in enumerate(image_faces):
+        face = image_face.reshape([-1, FACE_SIZE, FACE_SIZE, 1])
+        results.append(fer_model.predict(face))
 
-        # print(result)
-        face = find_max_area_face(faces)
+    for i, face in enumerate(faces):
+        cv2.rectangle(frame, \
+                      (face[0], face[1]), \
+                      (face[0] + face[2], face[1] + face[3]), \
+                      (255, 0, 0), \
+                      2)
 
         half_width = int(face[2] / 2)
         half_height = int(face[3] / 2)
 
-        # frame[height, width]
         for x in range(emoji_size[0]):
             for y in range(emoji_size[1]):
-                frame[y + face[1] - emoji_size[0], x + face[0] + half_width - int(emoji_size[0] / 2)] = emoji_img[np.argmax(result)][y, x]
+                try:
+                    frame[y + face[1] - emoji_size[0], x + face[0] + half_width - int(emoji_size[0] / 2)] = emoji_img[np.argmax(results[i])][y, x]
+                except Exception:
+                    print("out of range")
 
+    # if found is not None:
+    #     image = found.reshape([-1, FACE_SIZE, FACE_SIZE, 1])
+    #     result = fer_model.predict(image)
     # else:
-    #     for x in range(200):
-    #         for y in range(200):
-    #             frame[x, y] = emoji_img[-1][x, y]
-
-                # print(frame.shape)
-        # print(emoji_img.shape)
-
-
-
+    #     result = None
+    #
+    # # Write results in frame
+    # if result is not None:
+    #     for index, emotion in enumerate(EMOTIONS):
+    #         # cv2.putText(frame, emotion, (10, index * 20 + 20),
+    #         #             cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 1)
+    #         #
+    #         # cv2.rectangle(frame, \
+    #         #               (130, index * 20 + 10), \
+    #         #               (130 + int(result[0][index] * 100), (index + 1) * 20 + 4), \
+    #         #               (255, 0, 0), \
+    #         #               -1)
+    #
+    #         for face in faces:
+    #             cv2.rectangle(frame, \
+    #                           (face[0], face[1]), \
+    #                           (face[0] + face[2], face[1] + face[3]), \
+    #                           (255, 0, 0), \
+    #                           2)
+    #
+    #     # print(result)
+    #     face = find_max_area_face(faces)
+    #
+    #     half_width = int(face[2] / 2)
+    #     half_height = int(face[3] / 2)
+    #
+    #     # frame[height, width]
+    #     for x in range(emoji_size[0]):
+    #         for y in range(emoji_size[1]):
+    #             frame[y + face[1] - emoji_size[0], x + face[0] + half_width - int(emoji_size[0] / 2)] = emoji_img[np.argmax(result)][y, x]
+    #
+    # # else:
+    # #     for x in range(200):
+    # #         for y in range(200):
+    # #             frame[x, y] = emoji_img[-1][x, y]
+    #
+    #             # print(frame.shape)
+    #     # print(emoji_img.shape)
+    #
+    #
+    #
     # Display the resulting frame
     try:
         cv2.imshow('Video', frame)
