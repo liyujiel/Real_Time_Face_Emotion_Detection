@@ -29,15 +29,15 @@ def format_image(image, max_face = 1):
         if count == max_face:
             break
 
-    try:
-        cv2.imshow("face1", image_faces[0])
-    except Exception:
-        print("no face 1")
-
-    try:
-        cv2.imshow("face2", image_faces[1])
-    except Exception:
-        print("no face 2")
+    # try:
+    #     cv2.imshow("face1", image_faces[0])
+    # except Exception:
+    #     print("no face 1")
+    #
+    # try:
+    #     cv2.imshow("face2", image_faces[1])
+    # except Exception:
+    #     print("no face 2")
 
     return image_faces, faces
 

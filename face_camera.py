@@ -47,21 +47,22 @@ while True:
     ret, frame = video_capture.read()
 
     # Predict result with network
-    image_faces, faces = format_image(frame)
+    image_faces, faces = format_image(frame, max_face=10)
 
     if image_faces is None:
         continue
-    try:
-        cv2.imshow('face1', image_faces[0])
-    except Exception:
-        print("no face 1")
-
-    try:
-        cv2.imshow('face2', image_faces[1])
-    except Exception:
-        print("no face 2")
+    # try:
+    #     cv2.imshow('face1', image_faces[0])
+    # except Exception:
+    #     print("no face 1")
+    #
+    # try:
+    #     cv2.imshow('face2', image_faces[1])
+    # except Exception:
+    #     print("no face 2")
 
     results = []
+    print(len(image_faces), "<- image_faces")
     for i, image_face in enumerate(image_faces):
         face = image_face.reshape([-1, FACE_SIZE, FACE_SIZE, 1])
         results.append(fer_model.predict(face))
@@ -76,10 +77,12 @@ while True:
         half_width = int(face[2] / 2)
         half_height = int(face[3] / 2)
 
+        emotion_index = np.argmax(results[i])
+
         for x in range(emoji_size[0]):
             for y in range(emoji_size[1]):
                 try:
-                    frame[y + face[1] - emoji_size[0], x + face[0] + half_width - int(emoji_size[0] / 2)] = emoji_img[np.argmax(results[i])][y, x]
+                    frame[y + face[1] - emoji_size[0], x + face[0] + half_width - int(emoji_size[0] / 2)] = emoji_img[emotion_index][y, x]
                 except Exception:
                     print("out of range")
 
