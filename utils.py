@@ -44,7 +44,7 @@ def draw_emotions(frame, emotion, results, faces):
     return frame
 
 
-def format_image(image, max_face = 1):
+def format_image(image, max_face=1):
     if len(image.shape) > 2 and image.shape[2] == 3:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     else:
@@ -61,7 +61,7 @@ def format_image(image, max_face = 1):
     image_faces = []
     count = 0
     for face in faces:
-        image_face = image[face[1] : face[1] + face[2], face[0] : face[0] + face[3]]
+        image_face = image[face[1]: face[1] + face[2], face[0] : face[0] + face[3]]
         image_face = _resize_face_img(image_face)
         image_faces.append(image_face)
         count += 1
@@ -218,6 +218,7 @@ def draw_predict(frame, conf, left, top, right, bottom):
     top = max(top, label_size[1])
     cv2.putText(frame, text, (left, top - 4), cv2.FONT_HERSHEY_SIMPLEX, 0.4,
                 COLOR_WHITE, 1)
+
 
 def get_outputs_names(net):
     # Get the names of all the layers in the network

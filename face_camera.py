@@ -20,8 +20,8 @@ log.basicConfig(filename='webcam.log', level=log.INFO)
 
 # load emotion model
 
-fer_model = keras.models.load_model(FER_MODEL_FILE)
-fer_model.load_weights(FER_MODEL_FILE)
+fer_model = keras.models.load_model(ENSEMBLE_MODEL_FILE)
+# fer_model.load_weights(FER_MODEL_FILE)
 
 # load gender model
 # gender_model = keras.models.load_model(GENDER_MODEL_FILE)
