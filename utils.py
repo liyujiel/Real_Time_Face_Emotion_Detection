@@ -5,6 +5,17 @@ from constants import *
 face_cascade = cv2.CascadeClassifier(CASC_PATH)
 
 
+def draw_rectangle(frame, faces):
+    for i, face in enumerate(faces):
+        cv2.rectangle(frame, \
+                      (face[0], face[1]), \
+                      (face[0] + face[2], face[1] + face[3]), \
+                      (255, 0, 0), \
+                      2)
+
+    return frame
+
+
 def format_image(image, max_face = 1):
     if len(image.shape) > 2 and image.shape[2] == 3:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
