@@ -32,15 +32,12 @@ video_capture = cv2.VideoCapture(0)
 emotion_path = './emoji/'
 emotion_face = ['angry.jpg', 'disgust.jpg', 'fear.jpg', 'happy.jpg', 'sad.jpg', 'surprise.jpg', 'neutral.jpg']
 
-emoji_size = (50, 50)
+emoji_size = EMOTION_SIZE
 emoji_img = []
 for i in range(len(emotion_face)):
     emoji_img.append(cv2.imread(emotion_path + emotion_face[i]))
-    emoji_img[i] = cv2.resize(emoji_img[i], emoji_size)
+    emoji_img[i] = cv2.resize(emoji_img[i], (emoji_size, emoji_size))
 
-# emoji_img[-1] = cv2.resize(emoji_img[-1], (200, 200))
-
-# print(emoji_img.shape)
 
 while True:
     # Capture frame-by-frame
@@ -51,25 +48,14 @@ while True:
 
     if image_faces is not None:
 
-        results = []
-        for i, image_face in enumerate(image_faces):
-            face = image_face.reshape([-1, FACE_SIZE, FACE_SIZE, 1])
-            results.append(fer_model.predict(face))
+        results = predict_emotions(image_faces, fer_model)
 
         frame = draw_rectangle(frame, faces)
 
-        # half_width = int(face[2] / 2)
-        # half_height = int(face[3] / 2)
-        #
-        # emotion_index = np.argmax(results[i])
-        #
-        # for x in range(emoji_size[0]):
-        #     for y in range(emoji_size[1]):
-        #         try:
-        #             frame[y + face[1] - emoji_size[0], x + face[0] + half_width - int(emoji_size[0] / 2)] = emoji_img[emotion_index][y, x]
-        #         except Exception:
-        #             print("out of range")
-
+        try:
+            frame = draw_emotions(frame, emoji_img, results, faces)
+        except Exception:
+            print("drawing failed")
     #
     # # else:
     # #     for x in range(200):

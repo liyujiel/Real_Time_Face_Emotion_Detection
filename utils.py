@@ -16,6 +16,34 @@ def draw_rectangle(frame, faces):
     return frame
 
 
+def predict_emotions(image_faces, fer_model):
+    results = []
+
+    for i, image_face in enumerate(image_faces):
+        face = image_face.reshape([-1, FACE_SIZE, FACE_SIZE, 1])
+        results.append(fer_model.predict(face))
+
+    return results
+
+
+def draw_emotions(frame, emotion, results, faces):
+
+    for i, face in enumerate(faces):
+        emotion_index = np.argmax(results[i])
+
+        half_width = int(face[2] / 2)
+
+        es = EMOTION_SIZE
+        for x in range(es):
+            for y in range(es):
+                try:
+                    frame[y + face[1] - es, x + face[0] + half_width - int(es / 2)] = emotion[emotion_index][y, x]
+                except Exception:
+                    print("out of range")
+
+    return frame
+
+
 def format_image(image, max_face = 1):
     if len(image.shape) > 2 and image.shape[2] == 3:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)

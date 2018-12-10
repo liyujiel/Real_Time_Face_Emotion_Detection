@@ -10,6 +10,7 @@ COLOR_RED = (0, 0, 255)
 COLOR_WHITE = (255, 255, 255)
 COLOR_YELLOW = (0, 255, 255)
 
+EMOTION_SIZE = 50
 EMOTIONS = ['angry', 'disgusted', 'fear',
             'happy', 'sad', 'surprised', 'neutral']
 
