@@ -7,6 +7,7 @@ import numpy as np
 import keras
 from constants import *
 from utils import *
+import time
 
 
 face_cascade = cv2.CascadeClassifier(CASC_PATH)
@@ -40,6 +41,9 @@ for i in range(len(emotion_face)):
 
 
 while True:
+
+    start = time.time()
+
     # Capture frame-by-frame
     ret, frame = video_capture.read()
 
@@ -56,6 +60,7 @@ while True:
             frame = draw_emotions(frame, emoji_img, results, faces)
         except Exception:
             print("drawing failed")
+
     #
     # # else:
     # #     for x in range(200):
@@ -72,6 +77,10 @@ while True:
         cv2.imshow('Video', frame)
     except Exception:
         print("Out of range")
+
+    end = time.time()
+    fps = round(1.0 / (end - start))
+    print("fps: ", fps)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
