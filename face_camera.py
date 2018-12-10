@@ -50,7 +50,6 @@ while True:
     image_faces, faces = format_image(frame, max_face=10)
 
     if image_faces is not None:
-
         results = predict_emotions(image_faces, fer_model)
 
         frame = draw_rectangle(frame, faces)
@@ -62,7 +61,6 @@ while True:
 
     end = time.time()
     fps = round(1.0 / (end - start))
-    print("fps: ", fps)
 
     cv2.putText(frame, "fps: " + str(fps), (0, 15),
         cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 0), 1)

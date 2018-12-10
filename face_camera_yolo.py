@@ -6,6 +6,7 @@ import numpy as np
 import keras
 from constants import *
 from utils import *
+import time
 
 
 face_cascade = cv2.CascadeClassifier(CASC_PATH)
@@ -32,17 +33,19 @@ video_capture = cv2.VideoCapture(0)
 emotion_path = './emoji/'
 emotion_face = ['angry.jpg', 'disgust.jpg', 'fear.jpg', 'happy.jpg', 'sad.jpg', 'surprise.jpg', 'neutral.jpg']
 
-emoji_size = (50, 50)
+emoji_size = EMOTION_SIZE
 emoji_img = []
 
 for i in range(len(emotion_face)):
     emoji_img.append(cv2.imread(emotion_path + emotion_face[i]))
-    emoji_img[i] = cv2.resize(emoji_img[i], emoji_size)
+    emoji_img[i] = cv2.resize(emoji_img[i], (emoji_size, emoji_size))
 
 
 while True:
     # Capture frame-by-frame
     ret, frame = video_capture.read()
+
+    start = time.time()
 
     # Create a 4D blob from a frame.
     blob = cv2.UMat(cv2.dnn.blobFromImage(frame, 1 / 255, (IMG_WIDTH, IMG_HEIGHT),
@@ -54,34 +57,35 @@ while True:
 
     # Runs the forward pass to get output of the output layers
     outs = net.forward(get_outputs_names(net))
-    face, resized_face = post_process(frame, outs, CONF_THRESHOLD, NMS_THRESHOLD)
+    faces, resized_faces = post_process(frame, outs, CONF_THRESHOLD, NMS_THRESHOLD)
 
-    if resized_face is not None:
-        image = resized_face.reshape([-1, FACE_SIZE, FACE_SIZE, 1])
-        result = fer_model.predict(image)
+    # predict the emotion with face by emotion model
+    results = []
+    if resized_faces is not None:
+        for resized_face in resized_faces:
+            if resized_face is None:
+                continue
+            else:
+                image = resized_face.reshape([-1, FACE_SIZE, FACE_SIZE, 1])
+                results.append(fer_model.predict(image))
     else:
-        result = None
+        results = None
 
     # Write results in frame
-    if result is not None:
-        for index, emotion in enumerate(EMOTIONS):
-            cv2.putText(frame, emotion, (10, index * 20 + 20),
-                        cv2.FONT_HERSHEY_PLAIN, 0.5, (0, 255, 0), 1)
-            cv2.rectangle(frame, (130, index * 20 + 10), (130 +
-                                                          int(result[0][index] * 100), (index + 1) * 20 + 4), (255, 0, 0), -1)
+    if results is not None:
 
-        # print(found)
+        frame = draw_rectangle(frame, faces)
 
-        half_width = int(face[2] / 2)
-        half_height = int(face[3] / 2)
+        try:
+            frame = draw_emotions(frame, emoji_img, results, faces)
+        except Exception:
+            print("drawing failed")
 
-        # frame[height, width]
-        for x in range(emoji_size[0]):
-            for y in range(emoji_size[1]):
-                frame[y + face[1] - emoji_size[0], x + face[0] + half_width - int(emoji_size[0] / 2)] = \
-                emoji_img[np.argmax(result)][y, x]
+    end = time.time()
+    fps = round(1.0 / (end - start))
 
-
+    cv2.putText(frame, "fps: " + str(fps), (0, 15),
+                cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 0), 1)
 
     # Display the resulting frame
     cv2.imshow('Video', frame)

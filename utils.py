@@ -105,10 +105,8 @@ def find_max_area_face(faces):
     return max_area_face
 
 
-def _parsing_max_area_face(faces, image):
+def _parsing_face(face, image):
     # Chop image to face
-    face = find_max_area_face(faces)
-
     image = image[face[1]:(face[1] + face[2]), face[0]:(face[0] + face[3])]
 
     return image
@@ -171,30 +169,45 @@ def post_process(frame, outs, conf_threshold, nms_threshold):
     #     final_boxes.append(box)
     #     draw_predict(frame, confidences[i], left, top, left + width,
     #                  top + height)
+    #
 
-    box = boxes[indices[0][0]]
-    left = box[0]
-    top = box[1]
-    width = box[2]
-    height = box[3]
-    draw_predict(frame, confidences[indices[0][0]], left, top, left + width,
-                     top + height)
-
+    # box = boxes[indices[0][0]]
+    # left = box[0]
+    # top = box[1]
+    # width = box[2]
+    # height = box[3]
+    # draw_predict(frame, confidences[indices[0][0]], left, top, left + width,
+    #                  top + height)
+    #
     if len(frame.shape) > 2 and frame.shape[2] == 3:
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     else:
         frame = cv2.imdecode(frame, cv2.CV_LOAD_IMAGE_GRAYSCALE)
 
-    image = _parsing_max_area_yolo(box, frame)
+    resized_faces = []
+    for box in boxes:
+        box[2], box[3] = box[3], box[2]
+        face = _parsing_face(box, frame)
+        resized_faces.append(_resize_face_img(face))
+        box[2], box[3] = box[3], box[2]
 
     try:
-        cv2.imshow("yolo_camera", image)
+        cv2.imshow("yolo_camera", resized_faces[0])
     except Exception:
-        print("face not in frame")
-    # Resize image to network size
-    resized_face = _resize_face_img(image)
+        print("failed to show")
 
-    return final_boxes, resized_face
+    return boxes, resized_faces
+
+    # image = _parsing_max_area_yolo(box, frame)
+    #
+    # try:
+    #     cv2.imshow("yolo_camera", image)
+    # except Exception:
+    #     print("face not in frame")
+    # # Resize image to network size
+    # resized_face = _resize_face_img(image)
+    #
+    # return final_boxes, resized_face
 
 def _parsing_max_area_yolo(box, frame):
     left = box[0]
