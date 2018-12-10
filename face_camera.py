@@ -27,7 +27,6 @@ fer_model.load_weights(FER_MODEL_FILE)
 # gender_model = keras.models.load_model(GENDER_MODEL_FILE)
 # gender_model.load_weights(GENDER_MODEL_FILE)
 
-
 video_capture = cv2.VideoCapture(0)
 
 emotion_path = './emoji/'
@@ -61,26 +60,18 @@ while True:
         except Exception:
             print("drawing failed")
 
-    #
-    # # else:
-    # #     for x in range(200):
-    # #         for y in range(200):
-    # #             frame[x, y] = emoji_img[-1][x, y]
-    #
-    #             # print(frame.shape)
-    #     # print(emoji_img.shape)
-    #
-    #
-    #
+    end = time.time()
+    fps = round(1.0 / (end - start))
+    print("fps: ", fps)
+
+    cv2.putText(frame, "fps: " + str(fps), (0, 15),
+        cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 0), 1)
+
     # Display the resulting frame
     try:
         cv2.imshow('Video', frame)
     except Exception:
         print("Out of range")
-
-    end = time.time()
-    fps = round(1.0 / (end - start))
-    print("fps: ", fps)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
