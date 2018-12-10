@@ -11,6 +11,8 @@ COLOR_WHITE = (255, 255, 255)
 COLOR_YELLOW = (0, 255, 255)
 
 EMOTION_SIZE = 50
+EMOTION_THRESHOLD = EMOTION_SIZE / 2.6
+COLOR_THRESHOLD = 235
 EMOTIONS = ['angry', 'disgusted', 'fear',
             'happy', 'sad', 'surprised', 'neutral']
 

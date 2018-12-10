@@ -26,7 +26,7 @@ def predict_emotions(image_faces, fer_model):
     return results
 
 
-def draw_emotions(frame, emotion, results, faces):
+def draw_emotions(frame, emotion, results, faces, emoji_codes):
 
     for i, face in enumerate(faces):
         emotion_index = np.argmax(results[i])
@@ -36,6 +36,8 @@ def draw_emotions(frame, emotion, results, faces):
         es = EMOTION_SIZE
         for x in range(es):
             for y in range(es):
+                if emoji_codes[emotion_index][y][x] == 1:
+                    continue
                 try:
                     frame[y + face[1] - es, x + face[0] + half_width - int(es / 2)] = emotion[emotion_index][y, x]
                 except Exception:

@@ -7,6 +7,7 @@ import keras
 from constants import *
 from utils import *
 import time
+from math import sqrt
 
 
 face_cascade = cv2.CascadeClassifier(CASC_PATH)
@@ -39,6 +40,31 @@ emoji_img = []
 for i in range(len(emotion_face)):
     emoji_img.append(cv2.imread(emotion_path + emotion_face[i]))
     emoji_img[i] = cv2.resize(emoji_img[i], (emoji_size, emoji_size))
+
+emoji_codes = []
+emoji_center = EMOTION_SIZE / 2
+threshold = EMOTION_THRESHOLD
+color_threshold = COLOR_THRESHOLD
+
+for i, emoji in enumerate(emoji_img):
+    emoji_code = []
+    for x in range(EMOTION_SIZE):
+        x_list = []
+        for y in range(EMOTION_SIZE):
+            dis = sqrt((float(x) - emoji_center) ** 2 + (float(y) - emoji_center) ** 2)
+            if emoji[x,y][0] >= COLOR_THRESHOLD and \
+                emoji[x,y][1] >= COLOR_THRESHOLD and \
+                emoji[x,y][2] >= COLOR_THRESHOLD and \
+                dis > threshold:
+
+                x_list.append(1)
+            else:
+                x_list.append(0)
+
+        emoji_code.append(x_list)
+    emoji_codes.append(emoji_code)
+
+
 
 
 while True:
@@ -77,7 +103,7 @@ while True:
         frame = draw_rectangle(frame, faces)
 
         try:
-            frame = draw_emotions(frame, emoji_img, results, faces)
+            frame = draw_emotions(frame, emoji_img, results, faces, emoji_codes)
         except Exception:
             print("drawing failed")
 
