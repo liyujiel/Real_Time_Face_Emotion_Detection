@@ -18,12 +18,17 @@ def get_img_name(index):
     res += ".png"
     return res
 
+
+def get_fer_name(index):
+    return index + '.png'
+
+
 def main():
     faces_data = pd.read_csv("fer2013.csv", names=NAEMS)
     # print(df.head())
 
     for index in range(len(faces_data)):
-        file_name = get_img_name(index)
+        file_name = get_fer_name(index)
         ints = sm.imread(file_name)
         new_pixels = ints.reshape(1, NEW_IMG_SIZE**2)
         new_strings = map(str, new_pixels[0])
